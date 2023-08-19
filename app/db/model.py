@@ -35,8 +35,11 @@ class Patient(Base):
     id = Column(String, primary_key=True)
     hospital_id = Column(Integer, ForeignKey("hospital.id"), nullable=False)
     name = Column(String, nullable=True)
-    age = Column(Integer, nullable=True)
-    disease = Column(String, nullable=True)
+    gender = Column(String, nullable=True)
+    birth_year = Column(Integer, nullable=True)
+    birth_month = Column(Integer, nullable=True)
+    birth_day = Column(Integer, nullable=True)
+    diagnosis = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), default=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
