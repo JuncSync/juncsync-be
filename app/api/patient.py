@@ -1,12 +1,10 @@
 from fastapi import APIRouter, Depends, Response
 from pydantic import BaseModel
-import pytz
 from sqlalchemy import select, update
-from uuid import uuid4
 
 from app.core.jwt import valid_request
 from app.core.utils import get_time
-from app.db.model import Bed, Patient
+from app.db.model import Patient
 from app.db.session import get_db
 
 router = APIRouter()
@@ -42,7 +40,7 @@ class PatientInfo(BaseModel):
     birth_day: int
 
 
-@router.post("/edit/{patient_id}", status_code=201)
+@router.put("/edit/{patient_id}", status_code=201)
 async def bed_in(
     res: Response,
     body: PatientInfo,
@@ -62,6 +60,7 @@ async def bed_in(
     patient = patient.scalar_one_or_none()
 
     if patient is None:
+        res.status_code = 400
         return {"isOk": False, "data": "Patient not found", "timestamp": get_time()}
     if patient.hospital_id != hospital_id:
         res.status_code = 403
@@ -86,5 +85,32 @@ async def bed_in(
     return {
         "isOk": True,
         "data": {"patient": patient},
+        "timestamp": get_time(),
+    }
+
+
+@router.get("/search/{keyword}")
+async def search_patient(
+    res: Response,
+    keyword: str,
+    hospital_id: int = Depends(valid_request),
+    db=Depends(get_db),
+):
+    if hospital_id is None:
+        res.status_code = 401
+        return {
+            "isOk": False,
+            "data": "Invalid authentication credentials",
+            "timestamp": get_time(),
+        }
+
+    patients = await db.execute(
+        select(Patient).filter(Patient.name.like(f"%{keyword}%"))
+    )
+    patients = patients.scalars().all()
+
+    return {
+        "isOk": True,
+        "data": patients,
         "timestamp": get_time(),
     }
