@@ -31,8 +31,8 @@ async def valid_request(
             token, JWT_SECRET_KEY.encode("utf-8"), algorithms=[ALGORITHM]
         )
 
-        uuid = payload.get("sub")
-        if uuid is None:
+        hospital_id = payload.get("sub")
+        if hospital_id is None:
             # raise HTTPException(
             #     status_code=status.HTTP_401_UNAUTHORIZED, detail="sub not found"
             # )
@@ -42,7 +42,7 @@ async def valid_request(
         # print(e)
         return None
 
-    return int(uuid)
+    return int(hospital_id)
 
 
 def sign_jwt(sub) -> str:
