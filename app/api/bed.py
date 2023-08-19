@@ -27,6 +27,15 @@ async def get_all(res: Response, id: int = Depends(valid_request), db=Depends(ge
     beds = await db.execute(select(Bed).where(Bed.hospital_id == id))
     beds = beds.scalars().all()
 
+    for bed in beds:
+        if bed.patient_id is not None:
+            patient = await db.execute(
+                select(Patient).where(Patient.id == bed.patient_id)
+            )
+            patient = patient.scalar_one_or_none()
+            if patient is not None:
+                bed.patient = patient
+
     return {"isOk": True, "data": beds, "timestamp": get_time()}
 
 
