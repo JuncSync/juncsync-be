@@ -40,6 +40,9 @@ class Patient(Base):
     birth_month = Column(Integer, nullable=True)
     birth_day = Column(Integer, nullable=True)
     diagnosis = Column(String, nullable=True)
+    severity = Column(String, nullable=True)
+    eta_hour = Column(Integer, nullable=True)
+    eta_min = Column(Integer, nullable=True)
     created_at = Column(DateTime(timezone=True), default=func.now())
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
