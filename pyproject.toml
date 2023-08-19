@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "juncsync-be"
+version = "0.1.0"
+description = ""
+authors = ["jaehong21 <jaehong21@gm.gist.ac.kr>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fastapi = "^0.95.2"
+uvicorn = "^0.22.0"
+gunicorn = "^20.1.0"
+sqlalchemy = "^2.0.15"
+asyncpg = "^0.27.0"
+pydantic = "^1.10.8"
+greenlet = "^2.0.2"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+python-dotenv = "^1.0.0"
+pytz = "^2023.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
