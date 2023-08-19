@@ -1,5 +1,6 @@
 from sqlalchemy import (
     Column,
+    Float,
     Integer,
     String,
     ForeignKey,
@@ -15,7 +16,9 @@ class Hospital(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
-    location = Column(ARRAY(Integer), nullable=False)
+    phone = Column(String, nullable=False)
+    location = Column(String, nullable=False)
+    coordinates = Column(ARRAY(Float), nullable=False)
 
 
 class Admin(Base):
