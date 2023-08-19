@@ -94,11 +94,10 @@ async def bed_out(
         res.status_code = 400
         return {"isOk": False, "data": "Bed is empty", "timestamp": get_time()}
 
-    current_time_with_tz = datetime.datetime.now(pytz.utc)
     await db.execute(
         update(Patient)
         .where(Patient.id == bed.patient_id)
-        .values(deleted_at=current_time_with_tz)
+        .values(deleted_at=datetime.datetime.now(pytz.utc))
     )
     await db.execute(update(Bed).where(Bed.id == bed_id).values(patient_id=None))
 
