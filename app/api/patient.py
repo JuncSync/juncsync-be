@@ -65,8 +65,9 @@ async def patient_admission(
     bed = bed.scalar_one_or_none()
 
     if bed is None:
+        res.status_code = 400
         return {"isOk": False, "data": "Bed not found", "timestamp": get_time()}
-    if bed.hospital_id != id:
+    if bed.hospital_id != hospital_id:
         res.status_code = 403
         return {"isOk": False, "data": "Wrong hospital", "timestamp": get_time()}
     if bed.patient_id is not None:
@@ -85,7 +86,7 @@ async def patient_admission(
 
     patient = Patient(
         id=body.patient_id,
-        hospital_id=id,
+        hospital_id=hospital_id,
         name=body.name,
         gender=body.gender,
         diagnosis=body.diagnosis,

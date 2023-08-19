@@ -14,8 +14,13 @@ router = APIRouter()
 
 
 @router.get("")
-async def get_all(res: Response, id: int = Depends(valid_request), db=Depends(get_db)):
-    if id is None:
+async def get_all(
+    res: Response,
+    keyword: str = "",
+    hospital_id: int = Depends(valid_request),
+    db=Depends(get_db),
+):
+    if hospital_id is None:
         res.status_code = 401
         return {
             "isOk": False,
@@ -23,18 +28,33 @@ async def get_all(res: Response, id: int = Depends(valid_request), db=Depends(ge
             "timestamp": get_time(),
         }
 
-    print("id: ", id)
-    beds = await db.execute(select(Bed).where(Bed.hospital_id == id))
-    beds = beds.scalars().all()
+    beds = None
+    if keyword == "":
+        beds = await db.execute(select(Bed).where(Bed.hospital_id == hospital_id))
+        beds = beds.scalars().all()
 
-    for bed in beds:
-        if bed.patient_id is not None:
-            patient = await db.execute(
-                select(Patient).where(Patient.id == bed.patient_id)
-            )
-            patient = patient.scalar_one_or_none()
-            if patient is not None:
+        for bed in beds:
+            if bed.patient_id is not None:
+                patient = await db.execute(
+                    select(Patient).where(Patient.id == bed.patient_id)
+                )
+                patient = patient.scalar_one_or_none()
+                if patient is not None:
+                    bed.patient = patient
+
+    else:
+        patients = await db.execute(
+            select(Patient).filter(Patient.name.like(f"%{keyword}%"))
+        )
+        patients = patients.scalars().all()
+
+        beds = []
+        for patient in patients:
+            bed = await db.execute(select(Bed).where(Bed.patient_id == patient.id))
+            bed = bed.scalar_one_or_none()
+            if bed is not None:
                 bed.patient = patient
+                beds.append(bed)
 
     return {"isOk": True, "data": beds, "timestamp": get_time()}
 
